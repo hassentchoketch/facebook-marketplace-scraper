@@ -133,9 +133,11 @@ def crawl_facebook_marketplace(city: str, query: str, max_price: int):
         # Wait for the page to load.
         time.sleep(2)
         try:
+            # email_input = page.wait_for_selector('input[name="email"]').fill('tchoketch-kebir@.fr')
             email_input = page.wait_for_selector('input[name="email"]').fill('YOUR_EMAIL_HERE')
+            # password_input = page.wait_for_selector('input[name="pass"]').fill('')
             password_input = page.wait_for_selector('input[name="pass"]').fill('YOUR_PASSWORD_HERE')
-            time.sleep(2)
+            time.sleep(30)
             login_button = page.wait_for_selector('button[name="login"]').click()
             time.sleep(2)
             page.goto(marketplace_url)
@@ -239,5 +241,6 @@ if __name__ == "__main__":
         # Specify the app as the FastAPI app.
         'app:app',
         host='127.0.0.1',
-        port=8000
+        port= 8000,
+        reload=True
     )

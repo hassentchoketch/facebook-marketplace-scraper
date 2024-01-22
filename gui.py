@@ -26,10 +26,10 @@ if submit:
         pass
     res = requests.get(f"http://127.0.0.1:8000/crawl_facebook_marketplace?city={city}&query={query}&max_price={max_price}"
     )
-    
+  
     # Convert the response from json into a Python list.
     results = res.json()
-    
+   
     # Display the length of the results list.
     st.write(f"Number of results: {len(results)}")
     
