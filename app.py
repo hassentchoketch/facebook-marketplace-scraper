@@ -137,30 +137,32 @@ def crawl_facebook_marketplace(city: str, query: str, max_price: int):
             email_input = page.wait_for_selector('input[name="email"]').fill('YOUR_EMAIL_HERE')
             # password_input = page.wait_for_selector('input[name="pass"]').fill('')
             password_input = page.wait_for_selector('input[name="pass"]').fill('YOUR_PASSWORD_HERE')
-            time.sleep(30)
+            time.sleep(20)
             login_button = page.wait_for_selector('button[name="login"]').click()
             time.sleep(2)
             page.goto(marketplace_url)
         except:
             page.goto(marketplace_url)
         # Wait for the page to load.
-        time.sleep(2)
+        time.sleep(7)
         # Infinite scroll to the bottom of the page until the loop breaks.
         # for _ in range(5):
         #     page.keyboard.press('End')
         #     time.sleep(2)
         html = page.content()
-        soup = BeautifulSoup(html, 'html.parser')
+        soup = BeautifulSoup(html, 'html5lib' )#'html.parser'
+        # print(soup)
         parsed = []
         listings = soup.find_all('div', class_='x9f619 x78zum5 x1r8uery xdt5ytf x1iyjqo2 xs83m0k x1e558r4 x150jy0e x1iorvi4 xjkvuk6 xnpuxes x291uyu x1uepa24')
+        print(listings)
         for listing in listings:
             try:
                 # Get the item image.
                 image = listing.find('img', class_='xt7dq6l xl1xv1r x6ikm8r x10wlt62 xh8yej3')['src']
                 # Get the item title from span.
-                title = listing.find('span', 'x1lliihq x6ikm8r x10wlt62 x1n2onr6').text
+                title = listing.find('span', class_='x1lliihq x6ikm8r x10wlt62 x1n2onr6').text
                 # Get the item price.
-                price = listing.find('span', 'x193iq5w xeuugli x13faqbe x1vvkbs x1xmvt09 x1lliihq x1s928wv xhkezso x1gmr53x x1cpjm7i x1fgarty x1943h6x xudqn12 x676frb x1lkfr7t x1lbecb7 x1s688f xzsf02u').text
+                price = listing.find('span', class_='x193iq5w xeuugli x13faqbe x1vvkbs x1xmvt09 x1lliihq x1s928wv xhkezso x1gmr53x x1cpjm7i x1fgarty x1943h6x xudqn12 x676frb x1lkfr7t x1lbecb7 x1s688f xzsf02u').text
                 # Get the item URL.
                 post_url = listing.find('a', class_='x1i10hfl xjbqb8w x6umtig x1b1mbwd xaqea5y xav7gou x9f619 x1ypdohk xt0psk2 xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz x1heor9g x1lku1pv')['href']
                 # Get the item location.
@@ -178,6 +180,7 @@ def crawl_facebook_marketplace(city: str, query: str, max_price: int):
         # Close the browser.
         browser.close()
         # Return the parsed data as a JSON.
+        print(parsed)
         result = []
         for item in parsed:
             result.append({
