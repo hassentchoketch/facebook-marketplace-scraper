@@ -134,39 +134,50 @@ def crawl_facebook_marketplace(city: str, query: str, max_price: int):
         time.sleep(2)
         try:
             # email_input = page.wait_for_selector('input[name="email"]').fill('tchoketch-kebir@.fr')
-            email_input = page.wait_for_selector('input[name="email"]').fill('YOUR_EMAIL_HERE')
+            email_input = page.wait_for_selector('input[name="email"]').fill('tchoketch-kebir@hotmail.fr')
             # password_input = page.wait_for_selector('input[name="pass"]').fill('')
-            password_input = page.wait_for_selector('input[name="pass"]').fill('YOUR_PASSWORD_HERE')
-            time.sleep(20)
+            password_input = page.wait_for_selector('input[name="pass"]').fill('0771659771')
+            time.sleep(2)
             login_button = page.wait_for_selector('button[name="login"]').click()
             time.sleep(2)
             page.goto(marketplace_url)
         except:
             page.goto(marketplace_url)
         # Wait for the page to load.
-        time.sleep(7)
+        time.sleep(5)
         # Infinite scroll to the bottom of the page until the loop breaks.
         # for _ in range(5):
         #     page.keyboard.press('End')
         #     time.sleep(2)
         html = page.content()
-        soup = BeautifulSoup(html, 'html5lib' )#'html.parser'
+        soup = BeautifulSoup(html, 'html.parser' )
         # print(soup)
         parsed = []
         listings = soup.find_all('div', class_='x9f619 x78zum5 x1r8uery xdt5ytf x1iyjqo2 xs83m0k x1e558r4 x150jy0e x1iorvi4 xjkvuk6 xnpuxes x291uyu x1uepa24')
-        print(listings)
+        # print(listings[0])
+ 
         for listing in listings:
             try:
                 # Get the item image.
-                image = listing.find('img', class_='xt7dq6l xl1xv1r x6ikm8r x10wlt62 xh8yej3')['src']
+                image_element = listing.find('img', class_='xt7dq6l xl1xv1r x6ikm8r x10wlt62 xh8yej3')
+                image = image_element['src'] if image_element else None
+
                 # Get the item title from span.
-                title = listing.find('span', class_='x1lliihq x6ikm8r x10wlt62 x1n2onr6').text
+                title_element = listing.find('span', 'x1lliihq x6ikm8r x10wlt62 x1n2onr6')
+                title = title_element.text if title_element else None
+
                 # Get the item price.
-                price = listing.find('span', class_='x193iq5w xeuugli x13faqbe x1vvkbs x1xmvt09 x1lliihq x1s928wv xhkezso x1gmr53x x1cpjm7i x1fgarty x1943h6x xudqn12 x676frb x1lkfr7t x1lbecb7 x1s688f xzsf02u').text
+                price_element = listing.find('span', 'x193iq5w xeuugli x13faqbe x1vvkbs x10flsy6 x1lliihq x1s928wv xhkezso x1gmr53x x1cpjm7i x1fgarty x1943h6x x1tu3fi x3x7a5m x1lkfr7t x1lbecb7 x1s688f xzsf02u')
+                price = price_element.text if price_element else None
+
                 # Get the item URL.
-                post_url = listing.find('a', class_='x1i10hfl xjbqb8w x6umtig x1b1mbwd xaqea5y xav7gou x9f619 x1ypdohk xt0psk2 xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz x1heor9g x1lku1pv')['href']
+                post_url_element = listing.find('a', class_='x1i10hfl xjbqb8w x6umtig x1b1mbwd xaqea5y xav7gou x9f619 x1ypdohk xt0psk2 xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz x1heor9g x1lku1pv')
+                post_url = post_url_element['href'] if post_url_element else None
+
                 # Get the item location.
-                location = listing.find('span', 'x1lliihq x6ikm8r x10wlt62 x1n2onr6 xlyipyv xuxw1ft x1j85h84').text
+                location_element = listing.find('span', 'x1lliihq x6ikm8r x10wlt62 x1n2onr6 xlyipyv xuxw1ft')
+                location = location_element.text if location_element else None
+
                 # Append the parsed data to the list.
                 parsed.append({
                     'image': image,
@@ -175,12 +186,15 @@ def crawl_facebook_marketplace(city: str, query: str, max_price: int):
                     'post_url': post_url,
                     'location': location
                 })
-            except:
-                pass
+
+            except Exception as e:
+                print(f"Error processing a listing: {e}")
+                # Continue to the next iteration or handle the error appropriately
+                continue
         # Close the browser.
         browser.close()
         # Return the parsed data as a JSON.
-        print(parsed)
+        # print(parsed)
         result = []
         for item in parsed:
             result.append({

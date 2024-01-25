@@ -35,13 +35,35 @@ if submit:
     
     # Iterate over the results list to display each item.
     for item in results:
-        st.header(item["title"])
-        img_url = item["image"]
-        st.image(img_url, width=200)
-        st.write(item["price"])
-        st.write(item["location"])
-        st.write(f"https://www.facebook.com{item['link']}")
-        st.write("----")
+        try:
+            st.header(item["title"])
+            
+            # Check if the image URL is not None before displaying the image
+            img_url = item["image"]
+            if img_url:
+                st.image(img_url, width=200)
+
+            # Check if the price is not None before displaying it
+            price = item["price"]
+            if price:
+                st.write(price)
+
+            # Check if the location is not None before displaying it
+            location = item["location"]
+            if location:
+                st.write(location)
+
+            # Check if the link is not None before creating the URL link
+            link = item['link']
+            if link:
+                st.write(f"https://www.facebook.com{link}")
+
+            st.write("----")
+
+        except Exception as e:
+            # Handle the exception (print an error message, log it, etc.)
+            st.error(f"Error processing an item: {e}")
+
     
 
       
